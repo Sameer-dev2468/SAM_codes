@@ -1,0 +1,8 @@
+# OpenAI API Configuration
+# Get your API key from: REDACTED
+
+OPENAI_API_KEY=REDACTED
+
+# Flask Configuration
+SECRET_KEY=your-secret-key-here
+FLASK_ENV=development 

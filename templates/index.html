@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Prediction App</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            min-height: 100vh;
+            color: #333;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated background particles */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.3) 0%, transparent 50%);
+            animation: float 20s ease-in-out infinite;
+            z-index: -1;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            33% { transform: translateY(-20px) rotate(1deg); }
+            66% { transform: translateY(10px) rotate(-1deg); }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            color: white;
+            position: relative;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, #fff, transparent);
+            border-radius: 2px;
+        }
+
+        .header h1 {
+            font-size: 4rem;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            font-weight: 700;
+            letter-spacing: -1px;
+            animation: slideInDown 1s ease-out;
+        }
+
+        .header h1 i {
+            background: linear-gradient(45deg, #ff6b6b, #feca57, #48dbfb, #ff9ff3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: rainbow 3s ease-in-out infinite;
+        }
+
+        @keyframes rainbow {
+            0%, 100% { filter: hue-rotate(0deg); }
+            50% { filter: hue-rotate(180deg); }
+        }
+
+        .header p {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            font-weight: 300;
+            animation: slideInUp 1s ease-out 0.3s both;
+        }
+
+        @keyframes slideInDown {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes slideInUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .main-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 30px;
+            padding: 40px;
+            box-shadow: 
+                0 25px 45px rgba(0,0,0,0.1),
+                inset 0 1px 0 rgba(255,255,255,0.2);
+            margin-bottom: 40px;
+            animation: fadeInUp 1s ease-out 0.5s both;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .main-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .main-card:hover::before {
+            left: 100%;
+        }
+
+        @keyframes fadeInUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .input-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 25px;
+            align-items: end;
+            margin-bottom: 40px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .form-group label {
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: white;
+            font-size: 1.1rem;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .form-group input, .form-group select {
+            padding: 18px 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 15px;
+            font-size: 16px;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            color: white;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .form-group input::placeholder {
+            color: rgba(255,255,255,0.7);
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #fff;
+            box-shadow: 0 0 20px rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+
+        .form-group select option {
+            background: #333;
+            color: white;
+        }
+
+        .btn {
+            padding: 18px 35px;
+            border: none;
+            border-radius: 15px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: 'Poppins', sans-serif;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border: 2px solid rgba(255,255,255,0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+            color: white;
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top: 4px solid #fff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        .loading p {
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .results-section {
+            display: none;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .results-section h2 {
+            color: white;
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            text-align: center;
+            font-weight: 600;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .forecast-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .forecast-card {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 25px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            animation: cardSlideIn 0.6s ease-out;
+        }
+
+        .forecast-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #ff6b6b, #feca57, #48dbfb, #ff9ff3);
+        }
+
+        .forecast-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+        }
+
+        @keyframes cardSlideIn {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .forecast-card.sunny {
+            background: linear-gradient(135deg, rgba(255, 236, 210, 0.2) 0%, rgba(252, 182, 159, 0.2) 100%);
+            border-color: rgba(255, 193, 7, 0.3);
+        }
+
+        .forecast-card.rainy {
+            background: linear-gradient(135deg, rgba(168, 237, 234, 0.2) 0%, rgba(254, 214, 227, 0.2) 100%);
+            border-color: rgba(0, 123, 255, 0.3);
+        }
+
+        .forecast-card.cloudy {
+            background: linear-gradient(135deg, rgba(210, 153, 194, 0.2) 0%, rgba(254, 249, 215, 0.2) 100%);
+            border-color: rgba(108, 117, 125, 0.3);
+        }
+
+        .forecast-card.cold {
+            background: linear-gradient(135deg, rgba(224, 195, 252, 0.2) 0%, rgba(102, 126, 234, 0.2) 100%);
+            border-color: rgba(0, 123, 255, 0.3);
+        }
+
+        .forecast-date {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .forecast-temp {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .forecast-condition {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 15px;
+            color: rgba(255,255,255,0.9);
+        }
+
+        .forecast-details {
+            font-size: 0.95rem;
+            color: rgba(255,255,255,0.8);
+            line-height: 1.6;
+        }
+
+        .charts-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .chart-container {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .chart-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        .chart-title {
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .error-message {
+            background: rgba(220, 53, 69, 0.2);
+            color: #fff;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 25px 0;
+            border-left: 4px solid #dc3545;
+            backdrop-filter: blur(10px);
+            animation: shake 0.5s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .success-message {
+            background: rgba(40, 167, 69, 0.2);
+            color: #fff;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 25px 0;
+            border-left: 4px solid #28a745;
+            backdrop-filter: blur(10px);
+        }
+
+        /* Floating elements animation */
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+
+        @keyframes floating {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .input-section {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .charts-section {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2.5rem;
+            }
+            
+            .main-card {
+                padding: 25px;
+            }
+            
+            .forecast-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.3);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255,255,255,0.5);
+        }
+
+        /* Loading dots animation */
+        .loading-dots {
+            display: inline-block;
+        }
+
+        .loading-dots::after {
+            content: '';
+            animation: dots 1.5s steps(5, end) infinite;
+        }
+
+        @keyframes dots {
+            0%, 20% { content: ''; }
+            40% { content: '.'; }
+            60% { content: '..'; }
+            80%, 100% { content: '...'; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header floating">
+            <h1><i class="fas fa-cloud-sun"></i> Weather Prediction</h1>
+            <p>Get accurate weather forecasts using machine learning and Kaggle data</p>
+        </div>
+
+        <div class="main-card">
+            <div class="input-section">
+                <div class="form-group">
+                    <label for="location"><i class="fas fa-map-marker-alt"></i> Location</label>
+                    <input type="text" id="location" placeholder="Enter city name (e.g., New York, London)" value="New York">
+                </div>
+                <div class="form-group">
+                    <label for="days"><i class="fas fa-calendar-alt"></i> Days to Predict</label>
+                    <select id="days">
+                        <option value="3">3 days</option>
+                        <option value="5">5 days</option>
+                        <option value="7" selected>7 days</option>
+                        <option value="10">10 days</option>
+                        <option value="14">14 days</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-primary" onclick="predictWeather()">
+                        <i class="fas fa-search"></i> Predict Weather
+                    </button>
+                </div>
+            </div>
+
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Training model and generating predictions<span class="loading-dots"></span></p>
+            </div>
+
+            <div class="results-section" id="results">
+                <h2>Weather Forecast for <span id="forecast-location"></span></h2>
+                
+                <div class="forecast-grid" id="forecast-grid">
+                    <!-- Forecast cards will be inserted here -->
+                </div>
+
+                <div class="charts-section">
+                    <div class="chart-container">
+                        <div class="chart-title"><i class="fas fa-thermometer-half"></i> Temperature Forecast</div>
+                        <div id="temperature-chart"></div>
+                    </div>
+                    <div class="chart-container">
+                        <div class="chart-title"><i class="fas fa-tint"></i> Humidity Forecast</div>
+                        <div id="humidity-chart"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function predictWeather() {
+            const location = document.getElementById('location').value;
+            const days = document.getElementById('days').value;
+            
+            if (!location.trim()) {
+                showError('Please enter a location');
+                return;
+            }
+
+            
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('results').style.display = 'none';
+
+           
+            fetch('/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    location: location,
+                    days_ahead: parseInt(days)
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('loading').style.display = 'none';
+                
+                if (data.success) {
+                    displayResults(data);
+                } else {
+                    showError(data.error || 'An error occurred while predicting weather');
+                }
+            })
+            .catch(error => {
+                document.getElementById('loading').style.display = 'none';
+                showError('Network error: ' + error.message);
+            });
+        }
+
+        function displayResults(data) {
+            const resultsDiv = document.getElementById('results');
+            const forecastGrid = document.getElementById('forecast-grid');
+            const locationSpan = document.getElementById('forecast-location');
+            
+            
+            locationSpan.textContent = data.location;
+            
+           
+            forecastGrid.innerHTML = '';
+            
+           
+            data.predictions.forEach((prediction, index) => {
+                setTimeout(() => {
+                    const card = document.createElement('div');
+                    card.className = `forecast-card ${prediction.condition.toLowerCase()}`;
+                    
+                    const date = new Date(prediction.date);
+                    const formattedDate = date.toLocaleDateString('en-US', { 
+                        weekday: 'short', 
+                        month: 'short', 
+                        day: 'numeric' 
+                    });
+                    
+                    card.innerHTML = `
+                        <div class="forecast-date">${formattedDate}</div>
+                        <div class="forecast-temp">${prediction.temperature}°C</div>
+                        <div class="forecast-condition">${prediction.condition}</div>
+                        <div class="forecast-details">
+                            <i class="fas fa-tint"></i> Humidity: ${prediction.humidity}%<br>
+                            <i class="fas fa-compress-alt"></i> Pressure: ${prediction.pressure} hPa<br>
+                            <i class="fas fa-wind"></i> Wind: ${prediction.wind_speed} km/h
+                        </div>
+                    `;
+                    
+                    forecastGrid.appendChild(card);
+                }, index * 100); 
+            });
+            
+            
+            Plotly.newPlot('temperature-chart', JSON.parse(data.temperature_plot).data, JSON.parse(data.temperature_plot).layout);
+            Plotly.newPlot('humidity-chart', JSON.parse(data.humidity_plot).data, JSON.parse(data.humidity_plot).layout);
+            
+            // Show results
+            resultsDiv.style.display = 'block';
+            
+            
+            resultsDiv.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function showError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.innerHTML = `<i class="fas fa-exclamation-triangle"></i> ${message}`;
+            
+            const mainCard = document.querySelector('.main-card');
+            mainCard.insertBefore(errorDiv, mainCard.firstChild);
+            
+            
+            setTimeout(() => {
+                errorDiv.remove();
+            }, 5000);
+        }
+
+       
+        document.getElementById('location').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                predictWeather();
+            }
+        });
+
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            const cards = document.querySelectorAll('.forecast-card');
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-10px) scale(1.02)';
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0) scale(1)';
+                });
+            });
+        });
+    </script>
+</body>
+</html> 

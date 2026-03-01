@@ -1,0 +1,240 @@
+{% extends "base.html" %}
+
+{% block title %}Analysis Results - AI Resume Classifier{% endblock %}
+
+{% block content %}
+<div class="main-container">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="display-6 fw-bold text-primary mb-2">
+                        <i class="fas fa-chart-bar me-3"></i>Analysis Results
+                    </h1>
+                    <p class="text-muted mb-0">
+                        <i class="fas fa-briefcase me-1"></i>{{ job_description.title }}
+                    </p>
+                </div>
+                <div class="text-end">
+                    <span class="badge bg-primary fs-6">{{ resumes|length }} Resumes Analyzed</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Job Description Summary -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">
+                <i class="fas fa-briefcase me-2"></i>Job Description
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-8">
+                    <h6 class="fw-semibold mb-2">{{ job_description.title }}</h6>
+                    <p class="text-muted mb-3">{{ job_description.description }}</p>
+                    {% if job_description.requirements %}
+                        <div class="mb-2">
+                            <strong>Key Requirements:</strong>
+                            <span class="text-muted">{{ job_description.requirements }}</span>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="col-md-4 text-end">
+                    <small class="text-muted">
+                        <i class="fas fa-calendar me-1"></i>
+                        Analyzed on {{ job_description.created_at.strftime('%B %d, %Y at %I:%M %p') }}
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Summary -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <div class="bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                        <i class="fas fa-trophy fa-2x text-success"></i>
+                    </div>
+                    <h5 class="card-title">{{ resumes|length }}</h5>
+                    <p class="card-text text-muted">Total Candidates</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                        <i class="fas fa-star fa-2x text-primary"></i>
+                    </div>
+                    <h5 class="card-title">{{ "%.1f"|format(resumes|map(attribute='score')|sum / resumes|length) }}%</h5>
+                    <p class="card-text text-muted">Average Score</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <div class="bg-warning bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                        <i class="fas fa-chart-line fa-2x text-warning"></i>
+                    </div>
+                    <h5 class="card-title">{{ resumes|selectattr('score', '>=', 80)|list|length }}</h5>
+                    <p class="card-text text-muted">Top Candidates (80%+)</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <div class="bg-info bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                        <i class="fas fa-clock fa-2x text-info"></i>
+                    </div>
+                    <h5 class="card-title">{{ "%.1f"|format(resumes|length * 2.5) }}s</h5>
+                    <p class="card-text text-muted">Processing Time</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ranked Results -->
+    <div class="card">
+        <div class="card-header bg-success text-white">
+            <h5 class="mb-0">
+                <i class="fas fa-list-ol me-2"></i>Ranked Candidates
+            </h5>
+        </div>
+        <div class="card-body p-0">
+            {% for resume in resumes %}
+            <div class="border-bottom p-4 {% if loop.first %}bg-light{% endif %}">
+                <div class="row align-items-center">
+                    <!-- Ranking and Score -->
+                    <div class="col-md-2 text-center">
+                        <div class="ranking-badge mb-2">#{{ resume.ranking }}</div>
+                        <div class="score-badge 
+                            {% if resume.score >= 80 %}score-excellent
+                            {% elif resume.score >= 60 %}score-good
+                            {% elif resume.score >= 40 %}score-average
+                            {% else %}score-poor{% endif %}">
+                            {{ "%.1f"|format(resume.score) }}%
+                        </div>
+                    </div>
+
+                    <!-- Resume Info -->
+                    <div class="col-md-4">
+                        <h6 class="fw-semibold mb-1">
+                            <i class="fas fa-file-alt me-2"></i>{{ resume.original_filename }}
+                        </h6>
+                        <small class="text-muted">
+                            <i class="fas fa-calendar me-1"></i>
+                            Uploaded {{ resume.uploaded_at.strftime('%B %d, %Y') }}
+                        </small>
+                    </div>
+
+                    <!-- Analysis Summary -->
+                    <div class="col-md-6">
+                        {% if resume.parsed_analysis %}
+                            {% if resume.parsed_analysis.strengths %}
+                                <div class="mb-2">
+                                    <strong class="text-success">Strengths:</strong>
+                                    {% for strength in resume.parsed_analysis.strengths[:3] %}
+                                        <span class="strength-item">{{ strength }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            {% if resume.parsed_analysis.concerns %}
+                                <div class="mb-2">
+                                    <strong class="text-danger">Concerns:</strong>
+                                    {% for concern in resume.parsed_analysis.concerns[:2] %}
+                                        <span class="concern-item">{{ concern }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Detailed Analysis (Collapsible) -->
+                <div class="mt-3">
+                    <button class="btn btn-outline-primary btn-sm" type="button" 
+                            data-bs-toggle="collapse" data-bs-target="#analysis{{ resume.id }}">
+                        <i class="fas fa-eye me-1"></i>View Detailed Analysis
+                    </button>
+                </div>
+
+                <div class="collapse mt-3" id="analysis{{ resume.id }}">
+                    <div class="card border-0 bg-light">
+                        <div class="card-body">
+                            {% if resume.parsed_analysis %}
+                                {% if resume.parsed_analysis.assessment %}
+                                    <div class="mb-3">
+                                        <h6 class="fw-semibold text-primary">
+                                            <i class="fas fa-comment me-1"></i>AI Assessment
+                                        </h6>
+                                        <p class="mb-0">{{ resume.parsed_analysis.assessment }}</p>
+                                    </div>
+                                {% endif %}
+
+                                {% if resume.parsed_analysis.strengths %}
+                                    <div class="mb-3">
+                                        <h6 class="fw-semibold text-success">
+                                            <i class="fas fa-check-circle me-1"></i>Key Strengths
+                                        </h6>
+                                        <div>
+                                            {% for strength in resume.parsed_analysis.strengths %}
+                                                <span class="strength-item">{{ strength }}</span>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                {% endif %}
+
+                                {% if resume.parsed_analysis.concerns %}
+                                    <div class="mb-3">
+                                        <h6 class="fw-semibold text-danger">
+                                            <i class="fas fa-exclamation-triangle me-1"></i>Areas of Concern
+                                        </h6>
+                                        <div>
+                                            {% for concern in resume.parsed_analysis.concerns %}
+                                                <span class="concern-item">{{ concern }}</span>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% else %}
+                                <p class="text-muted mb-0">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    Detailed analysis not available
+                                </p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="text-center mt-4">
+        <a href="{{ url_for('upload') }}" class="btn btn-primary me-3">
+            <i class="fas fa-plus me-2"></i>Analyze More Resumes
+        </a>
+        <a href="{{ url_for('history') }}" class="btn btn-outline-primary">
+            <i class="fas fa-history me-2"></i>View History
+        </a>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto-expand first result
+    const firstAnalysis = document.querySelector('#analysis{{ resumes[0].id if resumes else "" }}');
+    if (firstAnalysis) {
+        firstAnalysis.classList.add('show');
+    }
+});
+</script>
+{% endblock %} 

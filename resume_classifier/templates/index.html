@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+
+{% block title %}AI Resume Classifier - Home{% endblock %}
+
+{% block content %}
+<div class="main-container">
+    <div class="row align-items-center">
+        <div class="col-lg-6">
+            <div class="mb-4">
+                <h1 class="display-4 fw-bold text-primary mb-3">
+                    <i class="fas fa-robot me-3"></i>AI Resume Classifier
+                </h1>
+                <p class="lead text-muted mb-4">
+                    Revolutionize your hiring process with AI-powered resume analysis. 
+                    Upload job descriptions and candidate resumes to get instant, intelligent rankings.
+                </p>
+                <div class="d-flex gap-3 mb-4">
+                    <a href="{{ url_for('upload') }}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-upload me-2"></i>Start Classifying
+                    </a>
+                    <a href="{{ url_for('history') }}" class="btn btn-outline-primary btn-lg">
+                        <i class="fas fa-history me-2"></i>View History
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="text-center">
+                <div class="position-relative">
+                    <div class="card border-0 bg-gradient-primary text-white p-4 mb-3">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="bg-white bg-opacity-20 rounded-circle p-3 me-3">
+                                <i class="fas fa-file-alt fa-2x"></i>
+                            </div>
+                            <div>
+                                <h5 class="mb-1">Smart Analysis</h5>
+                                <small>AI-powered resume evaluation</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card border-0 bg-gradient-success text-white p-4 mb-3">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="bg-white bg-opacity-20 rounded-circle p-3 me-3">
+                                <i class="fas fa-chart-line fa-2x"></i>
+                            </div>
+                            <div>
+                                <h5 class="mb-1">Intelligent Ranking</h5>
+                                <small>Automated candidate scoring</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card border-0 bg-gradient-warning text-white p-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="bg-white bg-opacity-20 rounded-circle p-3 me-3">
+                                <i class="fas fa-users fa-2x"></i>
+                            </div>
+                            <div>
+                                <h5 class="mb-1">Batch Processing</h5>
+                                <small>Handle up to 101 resumes at once</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <h2 class="text-center mb-5">How It Works</h2>
+        </div>
+    </div>
+    
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card h-100 text-center">
+                <div class="card-body">
+                    <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                        <i class="fas fa-edit fa-2x text-primary"></i>
+                    </div>
+                    <h5 class="card-title">1. Define Job Requirements</h5>
+                    <p class="card-text text-muted">
+                        Enter the job title, description, and key requirements for the position you're hiring for.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card h-100 text-center">
+                <div class="card-body">
+                    <div class="bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                        <i class="fas fa-upload fa-2x text-success"></i>
+                    </div>
+                    <h5 class="card-title">2. Upload Resumes</h5>
+                    <p class="card-text text-muted">
+                        Upload multiple resume files (PDF/DOC) - up to 101 candidates at once for efficient processing.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card h-100 text-center">
+                <div class="card-body">
+                    <div class="bg-warning bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                        <i class="fas fa-trophy fa-2x text-warning"></i>
+                    </div>
+                    <h5 class="card-title">3. Get Ranked Results</h5>
+                    <p class="card-text text-muted">
+                        Receive AI-analyzed results with compatibility scores, strengths, and detailed assessments.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Section -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="card bg-gradient-primary text-white">
+                <div class="card-body text-center">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <i class="fas fa-robot fa-3x mb-2"></i>
+                                <h3 class="mb-1">AI-Powered</h3>
+                                <p class="mb-0">Advanced LLM Analysis</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <i class="fas fa-file-alt fa-3x mb-2"></i>
+                                <h3 class="mb-1">Multi-Format</h3>
+                                <p class="mb-0">PDF & DOC Support</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <i class="fas fa-users fa-3x mb-2"></i>
+                                <h3 class="mb-1">Batch Process</h3>
+                                <p class="mb-0">Up to 101 Resumes</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <i class="fas fa-chart-bar fa-3x mb-2"></i>
+                                <h3 class="mb-1">Smart Ranking</h3>
+                                <p class="mb-0">Intelligent Scoring</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.bg-gradient-primary {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+}
+
+.bg-gradient-success {
+    background: linear-gradient(135deg, var(--success-color), #059669);
+}
+
+.bg-gradient-warning {
+    background: linear-gradient(135deg, var(--warning-color), #d97706);
+}
+</style>
+{% endblock %} 
