@@ -1,155 +1,239 @@
-# Weather Prediction Web Application
+# 🛒 Vellique — SAM E-Commerce
 
-A comprehensive weather prediction web application that uses machine learning to forecast weather conditions based on historical data. The application features a beautiful, modern UI and integrates with Kaggle APIs for data retrieval.
+A modern, full-stack e-commerce application built with **React** and **Node.js**, featuring smooth page transitions, JWT authentication, and a clean shopping experience.
 
-## Features
+> **Live Demo:** Deployed on [Vercel](https://vercel.com)
 
-- 🌤️ **Weather Forecasting**: Predict temperature, humidity, pressure, and wind speed
-- 🎯 **Machine Learning**: Uses Random Forest algorithm for accurate predictions
-- 📊 **Interactive Visualizations**: Beautiful charts using Plotly
-- 🎨 **Modern UI**: Responsive design with gradient backgrounds and smooth animations
-- 📱 **Mobile Friendly**: Works perfectly on all devices
-- 🔄 **Real-time Predictions**: Get forecasts for 3-14 days ahead
-- 📍 **Location-based**: Enter any city name for location-specific forecasts
+---
 
-## Technologies Used
+## ✨ Features
 
-- **Backend**: Flask (Python)
-- **Machine Learning**: Scikit-learn (Random Forest)
-- **Data Processing**: Pandas, NumPy
-- **Visualization**: Plotly
-- **Frontend**: HTML5, CSS3, JavaScript
-- **Data Source**: Kaggle API (with sample data fallback)
+- 🏠 **Home Page** — Curated product grid with search functionality
+- 📦 **Product Detail** — Individual product pages with add-to-cart
+- 🛒 **Shopping Cart** — Persistent cart with quantity management
+- 🔐 **Authentication** — Sign in / sign up with JWT and bcrypt
+- 🎞️ **Smooth Animations** — Page transitions powered by Framer Motion
+- 📱 **Responsive Design** — Mobile-first layout with TailwindCSS
+- 🔍 **Search** — Real-time product search across the catalog
 
-## Installation
+---
+
+## 🏗️ Tech Stack
+
+### Frontend
+| Technology | Purpose |
+|---|---|
+| [React 18](https://react.dev) | UI framework |
+| [Vite](https://vitejs.dev) | Build tool & dev server |
+| [React Router v6](https://reactrouter.com) | Client-side routing |
+| [TailwindCSS 3](https://tailwindcss.com) | Utility-first CSS |
+| [Framer Motion](https://www.framer.com/motion/) | Page transition animations |
+
+### Backend
+| Technology | Purpose |
+|---|---|
+| [Express.js](https://expressjs.com) | REST API server |
+| [Prisma ORM](https://www.prisma.io) | Database toolkit |
+| [MySQL](https://www.mysql.com) | Relational database |
+| [JSON Web Tokens](https://jwt.io) | Stateless authentication |
+| [bcrypt](https://github.com/kelektiv/node.bcrypt.js) | Password hashing |
+
+### Deployment
+| Technology | Purpose |
+|---|---|
+| [Vercel](https://vercel.com) | Hosting & CI/CD |
+| Vercel Serverless Functions | API endpoints |
+
+---
+
+## 📁 Project Structure
+
+```
+sam-ecommerce/
+├── frontend/                   # React + Vite SPA
+│   ├── src/
+│   │   ├── components/         # Reusable UI components
+│   │   │   ├── Header.jsx      # Navigation bar with search
+│   │   │   ├── Footer.jsx      # Site footer
+│   │   │   └── ProductCard.jsx # Product grid card
+│   │   ├── pages/              # Route-level page components
+│   │   │   ├── Home.jsx        # Landing page with product grid
+│   │   │   ├── ProductDetail.jsx
+│   │   │   ├── CartPage.jsx
+│   │   │   └── SignIn.jsx
+│   │   ├── context/            # React Context providers
+│   │   │   ├── AuthContext.jsx # JWT auth state management
+│   │   │   ├── CartContext.jsx # Shopping cart state
+│   │   │   └── SearchContext.jsx
+│   │   ├── data/
+│   │   │   └── products.js    # Product catalog data
+│   │   ├── styles/
+│   │   │   └── index.css      # Global styles + Tailwind imports
+│   │   ├── App.jsx            # Root component with routing
+│   │   └── main.jsx           # Entry point
+│   ├── index.html
+│   ├── vite.config.js
+│   ├── tailwind.config.cjs
+│   └── package.json
+│
+├── backend/                    # Express.js API
+│   ├── api/
+│   │   ├── auth/              # Login, register, logout endpoints
+│   │   ├── products/          # Product CRUD endpoints
+│   │   └── orders/            # Order management endpoints
+│   ├── prisma/
+│   │   └── schema.prisma      # Database schema (User, Product, Order, OrderItem)
+│   ├── src/                   # Server source code
+│   └── package.json
+│
+├── vercel.json                # Vercel deployment configuration
+└── package.json               # Root build scripts
+```
+
+---
+
+## 🗄️ Database Schema
+
+```
+┌──────────┐     ┌──────────┐     ┌───────────┐     ┌───────────┐
+│   User   │────<│  Order   │────<│ OrderItem │>────│  Product  │
+├──────────┤     ├──────────┤     ├───────────┤     ├───────────┤
+│ id       │     │ id       │     │ id        │     │ id        │
+│ email    │     │ userId   │     │ orderId   │     │ name      │
+│ password │     │ totalCents│    │ productId │     │ description│
+│ name     │     │ status   │     │ quantity  │     │ priceCents│
+│ createdAt│     │ createdAt│     │ unitCents │     │ sku       │
+└──────────┘     └──────────┘     └───────────┘     │ imageUrl  │
+                                                     │ createdAt │
+                                                     └───────────┘
+```
+
+---
+
+## 🚀 Getting Started
 
 ### Prerequisites
 
-- Python 3.8 or higher
-- pip package manager
+- [Node.js](https://nodejs.org/) (v18+)
+- [MySQL](https://www.mysql.com/) database
+- [Git](https://git-scm.com/)
 
-### Setup Instructions
+### 1. Clone the repository
 
-1. **Clone or download the project files**
-
-2. **Install dependencies**:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-3. **Set up Kaggle API (Optional)**:
-   - Go to [Kaggle](https://www.kaggle.com/) and create an account
-   - Go to your account settings and create an API token
-   - Download the `kaggle.json` file
-   - Place it in `~/.kaggle/kaggle.json` (Linux/Mac) or `C:\Users\<username>\.kaggle\kaggle.json` (Windows)
-
-4. **Run the application**:
-   ```bash
-   python weatherpred.py
-   ```
-
-5. **Open your browser** and go to `http://localhost:5000`
-
-## Usage
-
-1. **Enter Location**: Type a city name (e.g., "New York", "London", "Tokyo")
-2. **Select Days**: Choose how many days ahead to predict (3-14 days)
-3. **Click Predict**: The application will train the model and generate forecasts
-4. **View Results**: See detailed weather cards and interactive charts
-
-## Project Structure
-
-```
-weatherpred.py          # Main Flask application
-templates/
-  index.html           # Web interface
-requirements.txt       # Python dependencies
-README.md             # This file
+```bash
+git clone https://github.com/Sameer-dev2468/SAM_codes.git
+cd SAM_codes/sam-ecommerce
 ```
 
-## How It Works
+### 2. Set up the Backend
 
-### Data Processing
-- Fetches historical weather data (currently uses sample data)
-- Prepares features including:
-  - Temporal features (day of year, month, day of week)
-  - Lag features (previous day temperatures)
-  - Rolling averages
-  - Current weather parameters
+```bash
+cd backend
+npm install
 
-### Machine Learning Model
-- **Algorithm**: Random Forest Regressor
-- **Features**: 11 engineered features
-- **Target**: Temperature prediction
-- **Evaluation**: MSE and R² score
+# Create your environment file
+cp .env.example .env
+```
 
-### Prediction Process
-1. Train model on historical data
-2. Generate feature vectors for future dates
-3. Predict temperature using trained model
-4. Derive other weather parameters (humidity, pressure, wind)
-5. Determine weather conditions based on predictions
+Edit `backend/.env` with your credentials:
 
-## API Endpoints
+```env
+DATABASE_URL="mysql://<username>:<password>@<host>/<database>?sslaccept=strict"
+JWT_SECRET=replace_this_with_a_strong_secret
+PORT=4000
+```
 
-- `GET /`: Main web interface
-- `POST /predict`: Generate weather predictions
-- `POST /train`: Train the model for a specific location
+Run the database migrations:
 
-## Customization
+```bash
+npx prisma migrate dev --name init
+npx prisma generate
+```
 
-### Adding Real Kaggle Data
-To use real Kaggle weather datasets:
+Start the backend server:
 
-1. Install the kaggle package: `pip install kaggle`
-2. Set up your Kaggle API credentials
-3. Modify the `fetch_kaggle_weather_data()` method in `weatherpred.py`
-4. Replace the sample data generation with actual API calls
+```bash
+npm run dev
+```
 
-### Model Improvements
-- Add more weather parameters (precipitation, UV index, etc.)
-- Implement ensemble methods
-- Add seasonal decomposition
-- Include more sophisticated feature engineering
+### 3. Set up the Frontend
 
-## Troubleshooting
+```bash
+cd ../frontend
+npm install
 
-### Common Issues
+# Create your environment file
+cp .env.example .env
+```
 
-1. **Port already in use**:
-   ```bash
-   # Change port in weatherpred.py
-   app.run(debug=True, host='0.0.0.0', port=5001)
-   ```
+Edit `frontend/.env`:
 
-2. **Missing dependencies**:
-   ```bash
-   pip install --upgrade -r requirements.txt
-   ```
+```env
+VITE_API_URL=http://localhost:4000
+```
 
-3. **Kaggle API errors**: The app will fall back to sample data if Kaggle API is not configured
+Start the frontend dev server:
 
-## Future Enhancements
+```bash
+npm run dev
+```
 
-- [ ] Real-time weather API integration
-- [ ] Multiple ML algorithms comparison
-- [ ] Weather alerts and notifications
-- [ ] Historical weather data visualization
-- [ ] User accounts and saved locations
-- [ ] Mobile app version
-- [ ] Advanced weather parameters (snow, fog, etc.)
+The app will be available at **http://localhost:5173**
 
-## Contributing
+---
 
-Feel free to submit issues and enhancement requests!
+## 🌐 Deployment (Vercel)
 
-## License
+This project is configured for **Vercel monorepo deployment** via `vercel.json`:
 
-This project is open source and available under the MIT License.
+- **Frontend** → Built with `@vercel/static-build`, outputs to `dist/`
+- **Backend API** → Deployed as serverless functions via `@vercel/node`
+- **Routing** → Uses `rewrites` for SPA fallback to `index.html`
 
-## Acknowledgments
+To deploy:
 
-- Kaggle for providing weather datasets
-- Scikit-learn for machine learning capabilities
-- Plotly for interactive visualizations
-- Flask for the web framework 
+1. Connect your GitHub repository to [Vercel](https://vercel.com)
+2. Set the **Root Directory** to `sam-ecommerce`
+3. Add environment variables (`DATABASE_URL`, `JWT_SECRET`) in Vercel dashboard
+4. Push to `main` — Vercel auto-deploys on every push
+
+---
+
+## 📜 Available Scripts
+
+### Frontend (`/frontend`)
+| Command | Description |
+|---|---|
+| `npm run dev` | Start Vite dev server |
+| `npm run build` | Production build to `dist/` |
+| `npm run preview` | Preview production build locally |
+
+### Backend (`/backend`)
+| Command | Description |
+|---|---|
+| `npm run dev` | Start with nodemon (hot reload) |
+| `npm start` | Start production server |
+| `npm run prisma:generate` | Generate Prisma client |
+| `npm run prisma:migrate` | Run database migrations |
+
+---
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+---
+
+## 📄 License
+
+This project is private and proprietary.
+
+---
+
+<p align="center">
+  Built with ❤️ by <strong>Sameer</strong>
+</p>
