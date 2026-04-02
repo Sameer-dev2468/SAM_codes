@@ -1,4 +1,4 @@
-import prisma from '../../../src/prismaClient.js'
+import prisma from '../../src/prismaClient.js'
 import cookie from 'cookie'
 import jwt from 'jsonwebtoken'
 

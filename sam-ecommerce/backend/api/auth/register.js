@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import cookie from 'cookie'
-import prisma from '../../../src/prismaClient.js'
+import prisma from '../../src/prismaClient.js'
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end()
